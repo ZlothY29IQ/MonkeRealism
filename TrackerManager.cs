@@ -36,7 +36,8 @@ namespace MonkeRealism
                     continue;
 
                 string serial = GetDeviceSerial(i);
-                Debug.Log($"[MonkeRealism] Found tracker {i} with serial: {serial}");
+                //Debug.Log($"[MonkeRealism] Found tracker {i} with serial: {serial}");
+                //Use this for degbugging if your dont know your trackers serial name
 
                 if (serial.ToLower().Contains(hipTrackerSerial.ToLower()))
                 {

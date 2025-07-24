@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Reflection;
+using System.Collections;
 using BepInEx;
 using BepInEx.Configuration;
 using GorillaLocomotion;
 using GorillaNetworking;
 using Photon.Pun;
 using UnityEngine;
+using UnityEngine.Networking;
 using UnityEngine.XR.Interaction.Toolkit;
 using Utilla;
 using Utilla.Attributes;
@@ -17,7 +19,7 @@ namespace MonkeRealism
 
     //Incompatibilities
     [BepInIncompatibility("com.zloth.recroomrig")]
-    [BepInIncompatibility("??????????????????????")] //graze's recroomrig/bodyestimations
+    [BepInIncompatibility("Graze.BodyEstimation")] 
     [BepInIncompatibility("com.graze.gorillatag.analogturn")]
     [BepInIncompatibility("Graze.AnalogTurn-CI")]
     [BepInIncompatibility("Graze.AnalogTurn-GC")]
@@ -26,8 +28,6 @@ namespace MonkeRealism
     public class Plugin : BaseUnityPlugin
     {
         public ConfigEntry<string> trackerName;
-        public static Plugin Instance { get; private set; }
-
         bool inRoom;
         float hipYRotationOffset = 0f;
         private float recenterHoldTime = 0f;
@@ -84,8 +84,36 @@ namespace MonkeRealism
             SetTurnModeToNone();
         }
 
+        private void PlayReCentredSound()
+        {
+            string url = "https://github.com/ZlothY29IQ/Mod-Resources/raw/refs/heads/main/RecentreSuccessfull.mp3";  //Slime Vr Mounting Calibration Complete SXF
+            StartCoroutine(PlayMp3FromURL(url));
+        }
 
-        private void SetTurnModeToNone()        // https://github.com/DecalFree/GorillaInterface/blob/main/ComputerInterface/BaseGameInterface.cs
+        private IEnumerator PlayMp3FromURL(string url)
+        {
+            using (UnityWebRequest www = UnityWebRequestMultimedia.GetAudioClip(url, AudioType.MPEG))
+            {
+                yield return www.SendWebRequest();
+
+                if (www.result == UnityWebRequest.Result.Success)
+                {
+                    AudioClip clip = DownloadHandlerAudioClip.GetContent(www);
+                    GameObject player = new GameObject("OneShotAudioPlayer");
+                    AudioSource source = player.AddComponent<AudioSource>();
+                    source.clip = clip;
+                    source.Play();
+                    Destroy(player, clip.length);
+                }
+                else
+                {
+                    Debug.LogError($"Audio download failed: {www.error}");
+                }
+            }
+        }
+
+
+        private void SetTurnModeToNone()    // https://github.com/DecalFree/GorillaInterface/blob/main/ComputerInterface/BaseGameInterface.cs
         {
             GorillaComputer computer = GameObject.FindObjectOfType<GorillaComputer>();
             if (computer == null)
@@ -140,6 +168,7 @@ namespace MonkeRealism
 
 
                         Debug.Log($"[MonkeRealism] Recentered. HipYaw: {hipYaw}, HeadsetYaw: {headsetYaw}, YawOffset: {yawOffset}");
+                        PlayReCentredSound();
                     }
 
                     recenterHoldTime = -999f; 
