@@ -29,6 +29,7 @@ namespace MonkeRealism
     public class Plugin : BaseUnityPlugin
     {
         public ConfigEntry<string> trackerName;
+        public ConfigEntry<bool> trackerSerialDebug;
         bool inRoom;
         float hipYRotationOffset = 0f;
         private float recenterHoldTime = 0f;
@@ -52,22 +53,31 @@ namespace MonkeRealism
         }
 
         void Awake()
-        {
-            trackerName = Config.Bind<string>(
-                "Tracker Settings",        
-                "Tracker",                 
-                "WAIST",                   
-                new ConfigDescription(
-                    "Tracker to use.\n" +
-                    "Recommended Usage: WAIST or CHEST.\n" +
-                    "You can use any tracker you want as long as you know the serial name for it.\n" +
-                    "I recommend using WAIST or CHEST only."
-                )
-            );
+{
+    trackerName = Config.Bind<string>(
+        "Tracker Settings",        
+        "Tracker",                 
+        "WAIST",                   
+        new ConfigDescription(
+            "Tracker to use.\n" +
+            "Recommended Usage: WAIST or CHEST.\n" +
+            "You can use any tracker you want as long as you know the serial name for it.\n" +
+            "I recommend using WAIST or CHEST only."
+        )
+    );
 
-            Logger.LogInfo($"Using tracker: {trackerName.Value}");
-        }
+    trackerSerialDebug = Config.Bind<bool>(
+        "Tracker Settings",
+        "Tracker Serial Debug",
+        false,
+        new ConfigDescription(
+            "Enable debug logs for tracker serial names. Useful if your using a different type of tracker and you dont know what the serial name is."
+        )
+    );
 
+    Logger.LogInfo($"Using tracker: {trackerName.Value}");
+    Logger.LogInfo($"Tracker Serial Debug: {trackerSerialDebug.Value}");
+}
         void OnEnable()
         {
             HarmonyPatches.ApplyHarmonyPatches();
@@ -84,6 +94,8 @@ namespace MonkeRealism
             TrackerManager.hipTrackerSerial = trackerName.Value.ToUpperInvariant();
             SetTurnModeToNone();
         }
+
+        //Why did I do overcomplicate the sound and do it like this???
 
         private void PlayReCentredSound()
         {
@@ -159,6 +171,13 @@ namespace MonkeRealism
 
                 if (recenterHoldTime >= recenterThreshold)
                 {
+                    //I just want yall to know that this very basic calibration below was kinda a bitch to figure out becuase when i changed the method for something this would go weird.
+                    //Im dreading having to actually make a full calibration method for when I add full body.
+                    //Luckily im actually good at maths compared to everything else I study so it should be too too hard.
+                    //Maybe instead of doing maths, I create reference points based on poses and adjust the position accordingly.
+                    //Did that for a full body mod in minecraft as it wouldnt work normally for some reason.
+                    //Also for the full body, how tf are people gonna move around. Are they gonna have to walk around with their actual legs or am I also gonna make a FPS/VRC style walking.
+                    //Or i just make the legs not collide with anything and its just for visual. If you wanna see them you can just float in the sky a little.
                     Quaternion? hipRot = TrackerManager.GetHipTrackerRotation();
                     if (hipRot.HasValue)
                     {
