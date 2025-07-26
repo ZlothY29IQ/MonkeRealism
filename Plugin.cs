@@ -92,6 +92,7 @@ namespace MonkeRealism
         {
             TrackerManager.Initialize();
             TrackerManager.hipTrackerSerial = trackerName.Value.ToUpperInvariant();
+            TrackerManager.serialDebug = trackerSerialDebug.Value;
             SetTurnModeToNone();
         }
 
