@@ -9,6 +9,7 @@ namespace MonkeRealism
         private static bool initialized = false;
         public static string hipTrackerSerial = "WAIST"; 
         public static bool IsInitialized => initialized;
+        public static bool serialDebug = false;
 
         public static void Initialize()
         {
@@ -34,11 +35,12 @@ namespace MonkeRealism
                 var deviceClass = OpenVR.System.GetTrackedDeviceClass(i);
                 if (deviceClass != ETrackedDeviceClass.GenericTracker)
                     continue;
-
-                string serial = GetDeviceSerial(i);
-                //Debug.Log($"[MonkeRealism] Found tracker {i} with serial: {serial}");
-                //Use this for degbugging if your dont know your trackers serial name
-
+                if (serialDebug)
+                {
+                    string serial = GetDeviceSerial(i);
+                    Debug.Log($"[MonkeRealism] Found tracker {i} with the serial name: {serial}");
+                }
+                
                 if (serial.ToLower().Contains(hipTrackerSerial.ToLower()))
                 {
                     var matrix = ConvertSteamVRMatrixToUnity(poses[i].mDeviceToAbsoluteTracking);
