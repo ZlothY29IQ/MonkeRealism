@@ -20,7 +20,7 @@ namespace MonkeRealism
     //Incompatibilities
     [BepInIncompatibility("com.zloth.recroomrig")]
     [BepInIncompatibility("Graze.BodyEstimation")] 
-    [BepInIncompatibility("Graze.BodyTracking")] 
+    [BepInIncompatibility("Graze.Bodytracking")] 
     [BepInIncompatibility("com.graze.gorillatag.analogturn")]
     [BepInIncompatibility("Graze.AnalogTurn-CI")]
     [BepInIncompatibility("Graze.AnalogTurn-GC")]
