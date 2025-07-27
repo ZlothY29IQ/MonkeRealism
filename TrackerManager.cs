@@ -35,9 +35,9 @@ namespace MonkeRealism
                 var deviceClass = OpenVR.System.GetTrackedDeviceClass(i);
                 if (deviceClass != ETrackedDeviceClass.GenericTracker)
                     continue;
+                string serial = GetDeviceSerial(i);
                 if (serialDebug)
                 {
-                    string serial = GetDeviceSerial(i);
                     Debug.Log($"[MonkeRealism] Found tracker {i} with the serial name: {serial}");
                 }
                 
