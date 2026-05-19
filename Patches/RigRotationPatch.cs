@@ -11,6 +11,8 @@ namespace MonkeRealism.Patches
         {
             try
             {
+                if (!__instance.enabled)
+                    return;
                 if (!__instance.isLocal || !Plugin.Instance.ShouldUseTracker.Value)
                     return;
 
